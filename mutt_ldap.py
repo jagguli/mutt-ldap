@@ -33,6 +33,7 @@ import time as _time
 
 import ldap as _ldap
 import ldap.sasl as _ldap_sasl
+import subprocess
 
 _xdg_import_error = None
 try:
@@ -195,9 +196,15 @@ class LDAPConnection (object):
             sasl = _ldap_sasl.gssapi()
             self.connection.sasl_interactive_bind_s('', sasl)
         else:
+            password = self.config.get('auth', 'password')
+            if not password:
+                passwordeval =  self.config.get('auth', 'passwordeval')
+                if passwordeval:
+                    password = subprocess.check_output(
+                        passwordeval.split()).strip()
             self.connection.bind(
                 self.config.get('auth', 'user'),
-                self.config.get('auth', 'password'),
+                password,
                 _ldap.AUTH_SIMPLE)
 
     def unbind(self):
