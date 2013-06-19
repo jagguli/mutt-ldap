@@ -201,7 +201,7 @@ class LDAPConnection (object):
                 passwordeval =  self.config.get('auth', 'passwordeval')
                 if passwordeval:
                     password = subprocess.check_output(
-                        passwordeval.split()).strip()
+                        passwordeval, shell=True).strip()
             self.connection.bind(
                 self.config.get('auth', 'user'),
                 password,
